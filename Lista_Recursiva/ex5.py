@@ -96,7 +96,7 @@ def busca_recursiva(lista: List[int], alvo: int, inicio: int, fim: int ):
     
 lista = [2, 5, 7, 8, 11, 12, 18, 25, 30, 42]
 
-alvo = 8
+alvo = 55
 
 num = busca_binaria(lista, alvo)
 
