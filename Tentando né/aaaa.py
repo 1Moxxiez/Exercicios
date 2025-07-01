@@ -107,63 +107,100 @@ cadastrar_alunos()
 
 
 
-import pprint
+def cadastrar_3_produtos():
+    """
+    Pede ao usuário para inserir os dados de 3 produtos e os retorna em uma lista.
+    """
+    estoque = []
+    print("--- Cadastro de 3 Produtos ---")
 
-def analisar_vendas():
+    for i in range(3):
+        nome = input(f"Digite o nome do produto {i+1}: ")
+        quantidade = int(input(f"Digite a quantidade de {nome}: "))
+        
+        # Cria o dicionário do produto e adiciona à lista de estoque
+        produto = {"nome": nome, "quantidade": quantidade}
+        estoque.append(produto)
+        print("Produto cadastrado!")
+        
+    return estoque
+
+def consultar_estoque(lista_de_produtos):
     """
-    Simula o registro de vendas e implementa as funcionalidades de análise.
+    Pergunta ao usuário o nome de um produto e mostra a quantidade em estoque.
     """
-    # Para facilitar a execução, as vendas foram pré-definidas.
-    # O formato segue o exemplo, e.g., {"produto": "Notebook", "quantidade": 3, "preco_unitario": 3500.0} [cite: 48]
+    print("\n--- Consulta de Estoque ---")
+    produto_procurado = input("Qual produto você quer consultar? ")
+    
+    encontrou = False
+    for produto in lista_de_produtos:
+        if produto["nome"] == produto_procurado:
+            print(f"Resultado: Há {produto['quantidade']} unidades de '{produto['nome']}' no estoque.")
+            encontrou = True
+            break # Para o loop assim que encontrar o produto
+            
+    if not encontrou:
+        print(f"O produto '{produto_procurado}' não foi encontrado.")
+
+# --- Execução do Programa ---
+# Primeiro, cadastra os produtos
+estoque_da_loja = cadastrar_3_produtos()
+
+# Depois, permite a consulta
+consultar_estoque(estoque_da_loja)
+
+
+def analisar_vendas_simples():
+    """
+    Analisa uma lista de vendas pré-definida.
+    """
+    # Lista de vendas já preenchida para facilitar o teste
     vendas = [
         {"produto": "Notebook", "quantidade": 2, "preco_unitario": 3500.0},
         {"produto": "Mouse", "quantidade": 10, "preco_unitario": 120.0},
         {"produto": "Teclado", "quantidade": 5, "preco_unitario": 250.0},
         {"produto": "Notebook", "quantidade": 1, "preco_unitario": 4200.0},
         {"produto": "Mouse", "quantidade": 8, "preco_unitario": 125.0},
-        {"produto": "Monitor", "quantidade": 3, "preco_unitario": 1500.0},
-        {"produto": "Teclado", "quantidade": 3, "preco_unitario": 260.0},
-        {"produto": "Notebook", "quantidade": 3, "preco_unitario": 3800.0},
-        {"produto": "Mouse", "quantidade": 5, "preco_unitario": 130.0},
-        {"produto": "Monitor", "quantidade": 2, "preco_unitario": 1600.0}
     ]
 
-    print("--- Vendas Registradas ---")
-    pprint.pprint(vendas)
+    print("--- Dados de Vendas ---")
+    print(vendas)
 
-    # Dicionários para agregar os dados da análise
-    total_arrecadado_por_produto = {}
-    total_vendido_por_produto = {}
-    
-    # Processa cada venda da lista
+    # --- 1. Calcular o total arrecadado por produto ---
+    faturamento_por_produto = {}
+    for venda in vendas:
+        produto = venda["produto"]
+        receita_da_venda = venda["quantidade"] * venda["preco_unitario"]
+
+        if produto not in faturamento_por_produto:
+            faturamento_por_produto[produto] = 0 # Cria a chave se for a primeira vez
+        
+        faturamento_por_produto[produto] += receita_da_venda
+
+    print("\n--- Total Arrecadado por Produto ---")
+    for produto, total in faturamento_por_produto.items():
+        print(f" - {produto}: R$ {total:.2f}")
+
+    # --- 2. Identificar o produto mais vendido (por quantidade) ---
+    quantidade_por_produto = {}
     for venda in vendas:
         produto = venda["produto"]
         quantidade = venda["quantidade"]
-        preco = venda["preco_unitario"]
         
-        # Calcula o total da venda atual
-        total_venda_atual = quantidade * preco
-        
-        # Agrega os totais por produto
-        total_arrecadado_por_produto[produto] = total_arrecadado_por_produto.get(produto, 0) + total_venda_atual
-        total_vendido_por_produto[produto] = total_vendido_por_produto.get(produto, 0) + quantidade
-        
-    print("\n--- Análise de Vendas ---")
+        if produto not in quantidade_por_produto:
+            quantidade_por_produto[produto] = 0 # Cria a chave
+            
+        quantidade_por_produto[produto] += quantidade
 
-    # (b.1) Exibe o total arrecadado por produto [cite: 51]
-    print("\nTotal Arrecadado por Produto:")
-    for produto, total in total_arrecadado_por_produto.items():
-        print(f"  - {produto}: R$ {total:,.2f}")
-        
-    # (b.2) Identifica e exibe o produto mais vendido [cite: 52]
-    if total_vendido_por_produto: # Garante que há vendas para analisar
-        produto_mais_vendido = max(total_vendido_por_produto, key=total_vendido_por_produto.get)
-        quantidade_maxima = total_vendido_por_produto[produto_mais_vendido]
-        
-        print("\nProduto Mais Vendido (por quantidade):")
-        print(f"  - {produto_mais_vendido}, com um total de {quantidade_maxima} unidades vendidas.")
-    else:
-        print("\nNenhuma venda registrada para analisar.")
+    produto_mais_vendido = ""
+    maior_quantidade = 0
+    for produto, quantidade_total in quantidade_por_produto.items():
+        if quantidade_total > maior_quantidade:
+            maior_quantidade = quantidade_total
+            produto_mais_vendido = produto
 
-# --- Execução do programa ---
-analisar_vendas()
+    print("\n--- Produto Mais Vendido ---")
+    print(f"O produto mais vendido foi '{produto_mais_vendido}' com {maior_quantidade} unidades.")
+
+# Executa a análise
+analisar_vendas_simples()
